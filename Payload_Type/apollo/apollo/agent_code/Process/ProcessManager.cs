@@ -7,8 +7,8 @@ namespace Process
     {
         private bool _blockDlls = false;
         private int _ppid = System.Diagnostics.Process.GetCurrentProcess().Id;
-        private string _applicationx64 = @"C:\Windows\System32\rundll32.exe";
-        private string _applicationx86 = @"C:\Windows\SysWOW64\rundll32.exe";
+        private string _applicationx64 = @"C:\Windows\System32\regsvr32.exe";
+        private string _applicationx86 = @"C:\Windows\SysWOW64\regsvr32.exe";
         private string _argumentsx64 = null;
         private string _argumentsx86 = null;
 

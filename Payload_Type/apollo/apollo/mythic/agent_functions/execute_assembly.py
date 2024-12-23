@@ -45,6 +45,19 @@ class ExecuteAssemblyArguments(TaskArguments):
                     ),
                 ],
             ),
+            CommandParameter(
+                name="sacrificial_prog_path",
+                cli_name="Sacrificial-Prog-Path",
+                display_name="Path to executable for execute as sacrificial process.",
+                type=ParameterType.String,
+                description="Path to executable for execute as sacrificial process.",
+                default_value="C:\\Windows\\System32\\rundll32.exe",
+                parameter_group_info=[
+                    ParameterGroupInfo(
+                        required=True, group_name="Default", ui_position=3
+                    ),
+                ],
+            )
         ]
 
     async def get_files(
