@@ -95,6 +95,20 @@ class LoadCommand(CommandBase):
             CallbackID=taskData.Callback.ID,
         ))
 
+        payload_search = await SendMythicRPCPayloadSearch(MythicRPCPayloadSearchMessage(
+            CallbackID=taskData.Callback.ID,
+        ))
+
+        if not payload_search.Success or len(payload_search.Payloads) == 0:
+            raise Exception("Failed to find payload.")
+        build_parameters = payload_search.Payloads[0].BuildParameters
+        if len(build_parameters) == 0:
+            raise Exception("No build parameters.")
+        
+        payload_arch = list(filter(lambda e: e.Name == "architecture", build_parameters))[0]
+        if not payload_arch:
+            raise Exception("Failed to find payload architecture parameter.")
+
         requested_cmds_names = set([r.Name for r in requested_cmds.Commands])
         alias_commands = [r.Name for r in requested_cmds.Commands if r.Attributes.get("alias", False)]
 
@@ -174,7 +188,7 @@ class LoadCommand(CommandBase):
                     f.write(templateFile.encode())
 
             outputPath = "{}/Tasks/bin/Release/Tasks.dll".format(agent_build_path.name)
-            shell_cmd = "dotnet build -c release -p:Platform=x64 {}/Tasks/Tasks.csproj -o {}/Tasks/bin/Release/".format(agent_build_path.name, agent_build_path.name)
+            shell_cmd = "dotnet build -c release -p:Platform={payload_arch} {}/Tasks/Tasks.csproj -o {}/Tasks/bin/Release/".format(agent_build_path.name, agent_build_path.name)
             proc = await asyncio.create_subprocess_shell(shell_cmd, stdout=asyncio.subprocess.PIPE,
                                                          stderr=asyncio.subprocess.PIPE, cwd=agent_build_path.name)
             stdout, stderr = await proc.communicate()
