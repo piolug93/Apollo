@@ -162,7 +162,7 @@ class ExecuteCoffCommand(CommandBase):
         outputPath = "{}/RunOF/bin/Release/RunOF.dll".format(agent_build_path.name)
         # shutil to copy payload files over
         copy_tree(str(self.agent_code_path), agent_build_path.name)
-        shell_cmd = "dotnet build -c release -p:Platform=x64 {}/RunOF/RunOF.csproj -o {}/RunOF/bin/Release/".format(agent_build_path.name, agent_build_path.name)
+        shell_cmd = "dotnet build -c release -p:Platform=\"Any CPU\" {}/RunOF/RunOF.csproj -o {}/RunOF/bin/Release/".format(agent_build_path.name, agent_build_path.name)
         proc = await asyncio.create_subprocess_shell(shell_cmd, stdout=asyncio.subprocess.PIPE,
                                                      stderr=asyncio.subprocess.PIPE, cwd=agent_build_path.name)
         stdout, stderr = await proc.communicate()
