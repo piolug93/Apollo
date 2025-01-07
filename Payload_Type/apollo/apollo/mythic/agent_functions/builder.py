@@ -39,6 +39,13 @@ A fully featured .NET 4.0 compatible training agent. Version: {}
             description="Output as shellcode, executable, or service.",
         ),
         BuildParameter(
+            name="architecture",
+            parameter_type=BuildParameterType.ChooseOne,
+            choices=["x86", "x64"],
+            default_value="x86",
+            description="Target architecture.",
+        ),
+        BuildParameter(
             name="shellcode_format",
             parameter_type=BuildParameterType.ChooseOne,
             choices=shellcode_format_options,
@@ -89,6 +96,7 @@ A fully featured .NET 4.0 compatible training agent. Version: {}
         success_message = f"Apollo {self.uuid} Successfully Built"
         stdout_err = ""
         defines_profiles_upper = []
+        arch = self.get_parameter('architecture')
 
         if len(set([info.get_c2profile()["is_p2p"] for info in self.c2info])) > 1:
             resp.set_status(BuildStatus.Error)
@@ -148,7 +156,7 @@ A fully featured .NET 4.0 compatible training agent. Version: {}
                                 templateFile = templateFile.replace("HTTP_ADDITIONAL_HEADERS_HERE", "")
                 with open(csFile, "wb") as f:
                     f.write(templateFile.encode())
-            command = f"dotnet build -c release -p:Platform=\"Any CPU\" -o {agent_build_path.name}/Release/"
+            command = f"dotnet build -c release -p:Platform=\"{arch}\" -o {agent_build_path.name}/Release/"
             #command = "rm -rf packages/*; nuget restore -NoCache -Force; msbuild -p:Configuration=Release -p:Platform=\"Any CPU\""
             await SendMythicRPCPayloadUpdatebuildStep(MythicRPCPayloadUpdateBuildStepMessage(
                 PayloadUUID=self.uuid,
@@ -259,7 +267,7 @@ A fully featured .NET 4.0 compatible training agent. Version: {}
                                 / "loader.bin"
                             )
                             shutil.move(shellcode_path, working_path)
-                            command = f"dotnet build -c release -p:OutputType=WinExe -p:Platform=\"Any CPU\""
+                            command = f"dotnet build -c release -p:OutputType=WinExe -p:Platform=\"{arch}\""
                             proc = await asyncio.create_subprocess_shell(
                                 command,
                                 stdout=asyncio.subprocess.PIPE,
