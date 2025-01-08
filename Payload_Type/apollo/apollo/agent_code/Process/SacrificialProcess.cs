@@ -553,7 +553,10 @@ namespace Process
                 return StartWithCredentials(_agent.GetIdentityManager().GetCurrentPrimaryIdentity().Token);
             }
             if (!bRet)
+            {
+                this.HasExited = true;
                 throw new Win32Exception(Marshal.GetLastWin32Error());
+            }
 
             PostStartupInitialize();
 
