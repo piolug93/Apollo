@@ -11,7 +11,7 @@ namespace Injection.Techniques.CreateRemoteThread
         private delegate IntPtr VirtualAllocEx(
            IntPtr hProcess,
            IntPtr lpAddress,
-           ulong dwSize,
+           UIntPtr dwSize,
            AllocationType flAllocationType,
            MemoryProtection flProtect);
         private delegate bool WriteProcessMemory(
@@ -68,11 +68,12 @@ namespace Injection.Techniques.CreateRemoteThread
                 IntPtr allocSpace = _pVirtualAllocEx(
                     _hProcess,
                     IntPtr.Zero,
-                    (ulong)_code.Length,
+                    (UIntPtr)_code.Length,
                     AllocationType.Commit | AllocationType.Reserve,
                     MemoryProtection.ReadWrite);
                 if (allocSpace == IntPtr.Zero)
                 {
+                    int error = Marshal.GetLastWin32Error();
                     bRet = false;
                 }
                 else
