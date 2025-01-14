@@ -1,4 +1,4 @@
-#define COMMAND_NAME_UPPER
+﻿#define COMMAND_NAME_UPPER
 
 #if DEBUG
 #define EXECUTE_ASSEMBLY
@@ -54,8 +54,6 @@ namespace Tasks
             public string AssemblyArguments;
             [DataMember(Name = "loader_stub_id")]
             public string LoaderStubId;
-            [DataMember(Name = "sacrificial_prog_path")]
-            public string SacrificialProgramPath;
         }
 
         private AutoResetEvent _senderEvent = new AutoResetEvent(false);
@@ -164,8 +162,7 @@ namespace Tasks
                 ExecuteAssemblyParameters parameters = _jsonSerializer.Deserialize<ExecuteAssemblyParameters>(_data.Parameters);
                 if (string.IsNullOrEmpty(parameters.LoaderStubId) ||
                     string.IsNullOrEmpty(parameters.AssemblyName) ||
-                    string.IsNullOrEmpty(parameters.PipeName) ||
-                    string.IsNullOrEmpty(parameters.SacrificialProgramPath))
+                    string.IsNullOrEmpty(parameters.PipeName))
                 {
                     throw new ExecuteAssemblyException($"One or more required arguments was not provided.");
                 }
@@ -181,8 +178,6 @@ namespace Tasks
                 }
 
                 ApplicationStartupInfo info = _agent.GetProcessManager().GetStartupInfo(IntPtr.Size == 8);
-                info.Application = parameters.SacrificialProgramPath;
-
                 proc = _agent.GetProcessManager().NewProcess(info.Application, info.Arguments, true);
 
                 try

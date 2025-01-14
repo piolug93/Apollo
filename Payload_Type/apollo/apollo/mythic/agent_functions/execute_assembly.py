@@ -45,19 +45,6 @@ class ExecuteAssemblyArguments(TaskArguments):
                     ),
                 ],
             ),
-            CommandParameter(
-                name="sacrificial_prog_path",
-                cli_name="Sacrificial-Prog-Path",
-                display_name="Path to executable for execute as sacrificial process.",
-                type=ParameterType.String,
-                description="Path to executable for execute as sacrificial process.",
-                default_value="C:\\Windows\\System32\\rundll32.exe",
-                parameter_group_info=[
-                    ParameterGroupInfo(
-                        required=True, group_name="Default", ui_position=3
-                    ),
-                ],
-            )
         ]
 
     async def get_files(
@@ -119,7 +106,7 @@ class ExecuteAssemblyCommand(CommandBase):
             )
             # shutil to copy payload files over
             copy_tree(str(self.agent_code_path), agent_build_path.name)
-            shell_cmd = "dotnet build -c release -p:Platform=\"Any CPU\" {}/ExecuteAssembly/ExecuteAssembly.csproj -o {}/ExecuteAssembly/bin/Release/".format(
+            shell_cmd = "dotnet build -c release -p:Platform=x64 {}/ExecuteAssembly/ExecuteAssembly.csproj -o {}/ExecuteAssembly/bin/Release/".format(
                 agent_build_path.name, agent_build_path.name
             )
             proc = await asyncio.create_subprocess_shell(
