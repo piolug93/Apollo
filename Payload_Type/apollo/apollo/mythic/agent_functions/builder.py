@@ -156,7 +156,7 @@ A fully featured .NET 4.0 compatible training agent. Version: {}
                                 templateFile = templateFile.replace("HTTP_ADDITIONAL_HEADERS_HERE", "")
                 with open(csFile, "wb") as f:
                     f.write(templateFile.encode())
-            command = f"dotnet build -c release -p:Platform=\"Any CPU\" -o {agent_build_path.name}/Release/"
+            command = f"dotnet build -c release -p:Platform=x64 -o {agent_build_path.name}/Release/"
             #command = "rm -rf packages/*; nuget restore -NoCache -Force; msbuild -p:Configuration=Release -p:Platform=\"Any CPU\""
             await SendMythicRPCPayloadUpdatebuildStep(MythicRPCPayloadUpdateBuildStepMessage(
                 PayloadUUID=self.uuid,
@@ -267,7 +267,7 @@ A fully featured .NET 4.0 compatible training agent. Version: {}
                                 / "loader.bin"
                             )
                             shutil.move(shellcode_path, working_path)
-                            command = f"dotnet build -c release -p:OutputType=WinExe -p:Platform=\"Any CPU\""
+                            command = f"dotnet build -c release -p:OutputType=WinExe -p:Platform=x64"
                             proc = await asyncio.create_subprocess_shell(
                                 command,
                                 stdout=asyncio.subprocess.PIPE,
