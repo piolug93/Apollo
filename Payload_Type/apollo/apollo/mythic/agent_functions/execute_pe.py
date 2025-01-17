@@ -8,6 +8,7 @@ from os import path
 import os
 import asyncio
 import platform
+import donut
 
 PRINTSPOOFER_FILE_ID = ""
 MIMIKATZ_FILE_ID = ""
@@ -154,7 +155,7 @@ class ExecutePECommand(CommandBase):
             await self.build_exepe()
 
         donutPic = donut.create(
-            file=EXEECUTE_ASSEMBLY_PATH, params=taskData.args.get_arg("pipe_name")
+            file=EXECUTE_PE_PATH, params=taskData.args.get_arg("pipe_name")
         )
         file_resp = await SendMythicRPCFileCreate(
             MythicRPCFileCreateMessage(
